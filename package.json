@@ -1,0 +1,9 @@
+{
+    "name": "Postgres Node API Ex",
+    "version": "1.0.0",
+    "dependencies": {
+        "express": "^4.17.1",
+        "http-server": "^0.12.3",
+        "pg": "^8.0.3"
+    }
+}

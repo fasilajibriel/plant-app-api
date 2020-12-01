@@ -1,5 +1,5 @@
 {
-    "name": "Plant App API",
+    "name": "Postgres Node API Ex",
     "version": "1.0.0",
     "dependencies": {
         "express": "^4.17.1",

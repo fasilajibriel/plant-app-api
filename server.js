@@ -9,13 +9,61 @@ app.use(express.json());
 const client = new Client({
     "user": "waqufrcs",
     "password": "WEhbPBRe7G33dNrFxH_Fy4xPK82_vo-p",
-    "host": "investment-admin.ca0xvoihrw52.us-east-1.rds.amazonaws.com",
+    "host": "drona.db.elephantsql.com",
     "port": 5432,
     "database": "waqufrcs"
 });
 
 
-app.get("/api", (req, res) => res.sendFile(`${__dirname}/some.html`));
+app.get("/", (req, res) => res.sendFile(`${__dirname}/index.html`));
+
+// Users
+app.post("/users/get", async (req, res) => {
+    let result = [];
+    try {
+        const reqJson = req.body;
+        let queryResult = await authUser(reqJson.phone, reqJson.password);
+        result.push(queryResult);
+    } catch (e) {
+        result.push({success: false});
+        console.log(result)
+    } finally {
+        res.setHeader("content-type", "application/json");
+        res.send(JSON.stringify(result))
+    }
+});
+async function authUser(phone, password) {
+    try {
+        const results = await client.query("SELECT * FROM users WHERE phone_number = $1 and password = $2", [phone, password]);
+        return results.rows[0];
+    } catch (e) {
+        return [];
+    }
+}
+
+// Requests
+
+app.post("/users/create", async (req, res) => {
+    let result = [];
+    try {
+        const reqJson = req.body;
+        let queryResult = await addUser(reqJson.firstName, reqJson.lastName, reqJson.email, reqJson.phoneNumber, reqJson.password);
+        result.push(queryResult);
+    } catch (e) {
+        result.push({success: false});
+    } finally {
+        res.setHeader("content-type", "application/json");
+        res.send(JSON.stringify(result))
+    }
+});
+async function addUser(firstName, lastName, email, phone, password) {
+    try {
+        const results = await client.query("INSERT INTO users(first_name, last_name, email, \"phone_number\", password, \"role\") VALUES($1, $2, $3, $4, $5, 'user')", [firstName, lastName, email, phone, password]);
+        return results.rows[0];
+    } catch (e) {
+        return [];
+    }
+}
 
 // GET SHAPES
 app.get("/api/shapes", async (req, res) => {

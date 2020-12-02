@@ -76,7 +76,53 @@ async function addUser(firstName, lastName, email, phone, password) {
     }
 }
 
-//Requests
+// Product
+app.post("/products/get", async (req, res) => {
+    let result = [];
+    try {
+        let queryResult = await getProducts();
+        result.push(queryResult);
+    } catch (e) {
+        result.push({success: false});
+        console.log(result)
+    } finally {
+        res.setHeader("content-type", "application/json");
+        res.send(JSON.stringify(result))
+    }
+});
+async function getProducts() {
+    try {
+        const results = await client.query("SELECT * FROM products");
+        return results.rows[0];
+    } catch (e) {
+        return [];
+    }
+}
+
+app.post("/products/create", async (req, res) => {
+    let result = [];
+    try {
+        const reqJson = req.body;
+        let queryResult = await addProduct(reqJson.name, reqJson.quantity, reqJson.price, reqJson.imgLink);
+        result.push(queryResult);
+    } catch (e) {
+        result.push({success: false});
+    } finally {
+        res.setHeader("content-type", "application/json");
+        res.send(JSON.stringify(result))
+    }
+});
+async function addProduct(name, quantity, price, imgLink) {
+    try {
+        const results = await client.query("INSERT INTO products(\"name\", price, image, quantity) VALUES($1, $2, $3, $4)", [name, price, imgLink, quantity]);
+        console.log(results);
+        return results.rows[0];
+    } catch (e) {
+        return [];
+    }
+}
+
+// Requests
 app.post("/requests/get", async (req, res) => {
     let result = [];
     try {
@@ -98,16 +144,16 @@ app.post("/requests/get", async (req, res) => {
 });
 async function userRequest(id) {
     try {
-        const results = await client.query("SELECT * FROM requests WHERE user_id = $1;", [id]);
-        return results.rows[0];
+        const results = await client.query("SELECT * FROM requests r INNER JOIN users u ON u.id = r.user_id WHERE r.user_id = $1;", [id]);
+        return results.rows;
     } catch (e) {
         return [];
     }
 }
 async function allRequest() {
     try {
-        const results = await client.query("SELECT * FROM requests;");
-        return results.rows[0];
+        const results = await client.query("SELECT * FROM requests r INNER JOIN users u ON u.id = r.user_id;");
+        return results.rows;
     } catch (e) {
         return [];
     }

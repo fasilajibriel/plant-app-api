@@ -93,7 +93,7 @@ app.post("/products/get", async (req, res) => {
 async function getProducts() {
     try {
         const results = await client.query("SELECT * FROM products");
-        return results.rows[0];
+        return results.rows;
     } catch (e) {
         return [];
     }

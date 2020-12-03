@@ -159,8 +159,8 @@ async function allRequest() {
     }
 }
 
-// app.listen(8080, () => console.log("Web server is listening.. on port 8080"));
-app.listen(process.env.PORT || 5000);
+app.listen(8080, () => console.log("Web server is listening.. on port 8080"));
+// app.listen(process.env.PORT || 5000);
 
 start();
 

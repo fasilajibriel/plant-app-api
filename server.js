@@ -159,7 +159,7 @@ async function allRequest() {
     }
 }
 
-app.post("/request/create", async (req, res) => {
+app.post("/requests/create", async (req, res) => {
     let result = [];
     try {
         const reqJson = req.body;

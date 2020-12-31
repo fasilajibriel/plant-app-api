@@ -206,6 +206,42 @@ async function addToCart(user_id, product_id) {
     }
 }
 
+app.post("/cart/get", async (req, res) => {
+    let result = [];
+    try {
+        if (req.body.id === undefined) {
+            let queryResult = await allOrders();
+            result.push(queryResult);
+        } else {
+            const reqJson = req.body;
+            let queryResult = await userOrders(reqJson.id);
+            result.push(queryResult);
+        }
+    } catch (e) {
+        result.push({success: false});
+        console.log(result)
+    } finally {
+        res.setHeader("content-type", "application/json");
+        res.send(JSON.stringify(result))
+    }
+});
+async function userOrders(id) {
+    try {
+        const results = await client.query("SELECT * FROM cart c INNER JOIN products p ON p.id = c.product_id WHERE c.user_id = $1;", [id]);
+        return results.rows;
+    } catch (e) {
+        return [];
+    }
+}
+async function allOrders() {
+    try {
+        const results = await client.query("SELECT * FROM cart c INNER JOIN products p ON p.id = c.product_id;");
+        return results.rows;
+    } catch (e) {
+        return [];
+    }
+}
+
 // app.listen(8080, () => console.log("Web server is listening.. on port 8080"));
 app.listen(process.env.PORT || 5000);
 

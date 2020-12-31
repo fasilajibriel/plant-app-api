@@ -198,7 +198,7 @@ app.post("/cart/create", async (req, res) => {
 });
 async function addToCart(user_id, product_id) {
     try {
-        const results = await client.query("INSERT INTO cart(user_id, product_id) VALUES($1, $2)", [user_id, product_id]);
+        const results = await client.query("INSERT INTO cart(user_id, product_id, is_ordered) VALUES($1, $2, false)", [user_id, product_id]);
         console.log(results);
         return results.rows[0];
     } catch (e) {

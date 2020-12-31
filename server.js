@@ -182,6 +182,30 @@ async function addRequest(id, content) {
     }
 }
 
+// Order
+app.post("/cart/create", async (req, res) => {
+    let result = [];
+    try {
+        const reqJson = req.body;
+        let queryResult = await addToCart(reqJson.user_id, reqJson.product_id);
+        result.push(queryResult);
+    } catch (e) {
+        result.push({success: false});
+    } finally {
+        res.setHeader("content-type", "application/json");
+        res.send(JSON.stringify(result))
+    }
+});
+async function addToCart(user_id, product_id) {
+    try {
+        const results = await client.query("INSERT INTO cart(user_id, product_id) VALUES($1, $2)", [user_id, product_id]);
+        console.log(results);
+        return results.rows[0];
+    } catch (e) {
+        return [];
+    }
+}
+
 // app.listen(8080, () => console.log("Web server is listening.. on port 8080"));
 app.listen(process.env.PORT || 5000);
 

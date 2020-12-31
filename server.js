@@ -159,8 +159,31 @@ async function allRequest() {
     }
 }
 
-app.listen(8080, () => console.log("Web server is listening.. on port 8080"));
-// app.listen(process.env.PORT || 5000);
+app.post("/request/create", async (req, res) => {
+    let result = [];
+    try {
+        const reqJson = req.body;
+        let queryResult = await addRequest(reqJson.id, reqJson.content);
+        result.push(queryResult);
+    } catch (e) {
+        result.push({success: false});
+    } finally {
+        res.setHeader("content-type", "application/json");
+        res.send(JSON.stringify(result))
+    }
+});
+async function addRequest(id, content) {
+    try {
+        const results = await client.query("INSERT INTO requests(user_id, content) VALUES($1, $2)", [id, content]);
+        console.log(results);
+        return results.rows[0];
+    } catch (e) {
+        return [];
+    }
+}
+
+// app.listen(8080, () => console.log("Web server is listening.. on port 8080"));
+app.listen(process.env.PORT || 5000);
 
 start();
 
